@@ -21,26 +21,36 @@
 
 
     <script>
+
+        var name = prompt("what is your name buddy?")
+
+
         var sock = new WebSocket("ws://localhost:3001") //    for local host ws://, and wss:// for secure ssl urls like heroku
-        
+
         sock.onopen = (event) => {
             document.getElementById("log").innerText = "****socket connected****\n\n" // printing the message on screen
-            sock.send("Hey There")
+            sock.send(JSON.stringify({
+                type: "enroll",
+                name: name
+            }))
         }
 
         sock.onmessage = (event) => {
             console.log("got message from server: ", event)
             console.log("got message from server: ", event.data)
+            let message = JSON.parse(event.data)
 
-            document.getElementById("log").innerText += "\n server: " + event.data + "\n" // printing the message on screen
+            document.getElementById("log").innerText += "\n" + message.from + ": " + message.text + "\n" // printing the message on screen
         }
 
 
         function sendMessage() {
             var text = document.getElementById("text").value
-            sock.send(text)
-
-            document.getElementById("log").innerText += "\n client: " + text // printing the message on screen
+            sock.send(JSON.stringify({
+                type: "message",
+                text: text
+            }))
+            document.getElementById("log").innerText += "\n Me: " + text // printing the message on screen
         }
     </script>
 
